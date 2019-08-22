@@ -5,13 +5,14 @@
 # General form of data.table syntax
 # DT[i, j, by]
 # |  |  |
-#   |  |  --> grouped by what?
-#   |  -----> what to do?
+#    |   |  --> grouped by what?
+#    |  -----> what to do?
 #   --------> on which rows?
 
 # Pega o DT, escolhe as linhas (i), faz um cálculo (j) por agrupamento (by).
 
 library(data.table)
+library(bikeshare14) # para obter o data.frame batrips.
 # library(tidyverse)
 
 # Create the data.table X 
@@ -63,7 +64,7 @@ batrips[c(1,6,10)] #Linhas 6, 7 e 10.
 
 batrips[!c(1:5, 10:15)] #Todas linhas menos as de 1 a 5 e 10 a 15.
 
-batrips[326339] #Última linmha da batrips.
+batrips[326339] #Última linha da batrips.
 
 batrips[.N] #Última linmha da batrips.
 
@@ -172,8 +173,9 @@ difftime(date1, date2, units = "min")
 difftime(date1, date2, units = "hour")
 
 date3 <- "2018-10-25"
-date4 <- "2018-12-20"
+date4 <- "2020-12-20"
 difftime(date4, date3, units = "weeks")
+difftime(date4, date3, units = "auto")
 
 # Calculando estatísticas. 
 # Aqui o resultado foi um data.table de uma linha.
@@ -212,16 +214,18 @@ ans
 
 # Além de calcular as colunas podemos nomeá-las.
 ans <- batrips[, .(num_d_viag = .N), by = .(inicio = start_station)]
-head(ans, 3)
+head(ans, 10)
 
 # Aqui contamos (.N) a quantidade de strat_station por mês.
 # Usamos a função month() do data.table, aplicado ao start_date.
 ans <- batrips[ , .N, by = .(start_station, mon = month(start_date))]
-head(ans, 7)
+ans
+nrow(ans)
 
 # Básico: calculando a duration média por start_station.
 # Dei uma guaribada para o resultado ficar natural para brasileiros.
-batrips[, .(mean_duration = format(round(mean(duration), 2), decimal.mark = ",", big.mark = ".")), by = start_station]
+batrips[, .(mean_duration = format(round(mean(duration), 2), decimal.mark = ",", big.mark = ".")),
+        by = start_station]
 
 # Calculando a média da duration por (group_by) start_station e end_station.
 batrips[, .(mean_duration = mean(duration)), by = .(start_station, end_station)]
